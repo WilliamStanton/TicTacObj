@@ -10,14 +10,19 @@ public class Main {
             Scanner kb = new Scanner(System.in);
 
             // While game hasn't ended
-            while (!game.checkWin()) {
-                System.out.println("board:\n" + game.getCompleteBoard());
+            while (!game.gameStatus().isTie() && !game.gameStatus().getWinner().isWon()) {
+                System.out.println("Board:\n" + game.getCompleteBoard());
                 System.out.print(game.getNextPlayer() + " turn: ");
                 game.updateGame(kb.nextInt());
             }
 
-            // Game won
-            System.out.println("Game over, won"); // Congratulate winner
+            // Game over, display TIE else WINNER
+            if (game.gameStatus().isTie())
+                System.out.println("Game over, there was a tie!");
+            else {
+                System.out.println("Game over, won: " + game.gameStatus().getWinner().getWinnerName()); // Congratulate winner
+                System.out.println(game.gameStatus().getWinner().getBoardSpots().toString()); // get spots won
+            }
             break;
         }
     }
