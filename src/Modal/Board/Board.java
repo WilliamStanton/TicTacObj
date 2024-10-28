@@ -1,10 +1,14 @@
 package Modal.Board;
 
-import Modal.Player;
+import java.util.ArrayList;
 
+/**
+ * Represents a board
+ */
 public class Board {
     private static int id = 1;
     private BoardSpot[][] boardSpots;
+    private ArrayList<BoardSpot> winningSpots;
 
     public Board() {
         // Initialize all board spots
@@ -19,6 +23,14 @@ public class Board {
 
     public BoardSpot[][] getBoardSpots() {
         return boardSpots;
+    }
+
+    public ArrayList<BoardSpot> getWinningSpots() {
+        return winningSpots;
+    }
+
+    public void setWinningSpots(ArrayList<BoardSpot> winningSpots) {
+        this.winningSpots = winningSpots;
     }
 
     /**

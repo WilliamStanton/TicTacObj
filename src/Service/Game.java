@@ -2,47 +2,50 @@ package Service;
 
 import Modal.Board.Board;
 import Modal.Board.BoardSpot;
-import Modal.Status.GameStatus;
 import Modal.Player;
-import Modal.Status.Winner;
+import Modal.Status;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class GameService {
-    private Board board;
-    private Player p1;
-    private Player p2;
+/**
+ * Game API
+ */
+public class Game {
+    private final Board board;
+    private final Player p1;
+    private final Player p2;
+    private Status status;
 
     // Initialize board
-    public GameService() {
+    public Game() {
         this.board = new Board();
         p1 = new Player("Player 1", "O", true);
         p2 = new Player("Player 2", "X", false);
+        status = Status.INCOMPLETE;
     }
 
     /**
      * Updates the game by setting spot and setting next player
-     * @param id the spot id
+     * @throws Exception game complete
+     * @param id the board spot id
      */
-    public void updateGame(int id) {
-        // Get board spot
-        var spot = getBoardSpot(id);
-
-        // Update board spot for current player
-        spot.setPlayer(getNextPlayer());
-
-        // Update next player
-        setNextPlayer();
+    public void next(int id) throws Exception {
+        if (status == Status.INCOMPLETE) {
+            // Update chosen board spot for current player
+            getBoardSpot(id).setPlayer(getNextPlayer());
+            setNextPlayer(); // Conclude move and enable next player to move
+            updateStatus();
+        }
+        else
+            throw new Exception("Game is complete, cannot continue.");
     }
 
     /**
      * Checks if there is a winner
-     * @return true/false
      */
-    public GameStatus gameStatus() {
+    public void updateStatus() {
         // Get board spots
-        boolean won = false;
         var bs = board.getBoardSpots();
         ArrayList<BoardSpot> winningBoardSpots = new ArrayList<>();
 
@@ -54,7 +57,7 @@ public class GameService {
                 // Get first index in column to compare against
                 if (!bs[col][row].getPlayer().equals(p.getPlayer())) {
                     colFlag = false;
-                    winningBoardSpots = new ArrayList<>();
+                    winningBoardSpots.clear();
                     break; // terminate loop
                 } else {
                     winningBoardSpots.add(bs[col][row]);
@@ -62,7 +65,9 @@ public class GameService {
             }
             if (colFlag) {
                 winningBoardSpots.add(p);
-                return new GameStatus(new Winner(winningBoardSpots));
+                board.setWinningSpots(winningBoardSpots);
+                status = Status.WON;
+                return;
             }
         }
 
@@ -74,7 +79,7 @@ public class GameService {
                 // Get first index in row to compare against
                 if (!bs[col][row].getPlayer().equals(p.getPlayer())) {
                     colFlag = false;
-                    winningBoardSpots = new ArrayList<>();
+                    winningBoardSpots.clear();
                     break; // terminate loop
                 } else {
                     winningBoardSpots.add(bs[col][row]);
@@ -82,37 +87,39 @@ public class GameService {
             }
             if (colFlag) {
                 winningBoardSpots.add(p);
-                return new GameStatus(new Winner(winningBoardSpots));
+                board.setWinningSpots(winningBoardSpots);
+                status = Status.WON;
+                return;
             }
         }
 
         // Check vertical
         if (bs[0][0].getPlayer().equals(bs[1][1].getPlayer())
                 && bs[1][1].getPlayer().equals(bs[2][2].getPlayer())) {
-            return new GameStatus(new Winner(new ArrayList<BoardSpot> (Arrays.asList(bs[0][0], bs[1][1], bs[2][2]))));
+            status = Status.WON;
+            board.setWinningSpots(new ArrayList<BoardSpot>(Arrays.asList(bs[0][0], bs[1][1], bs[2][2])));
+            return;
         }
         if (bs[2][0].getPlayer().equals(bs[1][1].getPlayer())
                 && bs[1][1].getPlayer().equals(bs[0][2].getPlayer())) {
-            return new GameStatus(new Winner(new ArrayList<BoardSpot>(Arrays.asList(bs[2][0], bs[1][1], bs[0][2]))));
+            status = Status.WON;
+            board.setWinningSpots(new ArrayList<BoardSpot>(Arrays.asList(bs[2][0], bs[1][1], bs[0][2])));
+            return;
         }
 
-        // Check tie
-        boolean tie = true;
-        for (int i = 0; i < bs.length; i++) {
-            for (int j = 0; j < bs[0].length; j++) {
-                // Check if any element is available
-                if (bs[i][j].getPlayer().getName() == null) {
-                    tie = false;
-                    break;
+        // Check tie if status hasnt yet been chosen
+        if (status == Status.INCOMPLETE) {
+            status = Status.TIED; // temporary set tie
+            for (int i = 0; i < bs.length; i++) {
+                for (int j = 0; j < bs[0].length; j++) {
+                    // Check if any element is available
+                    if (bs[i][j].getPlayer().getName() == null) {
+                        status = Status.INCOMPLETE; // change back to incomplete if tie not found
+                        break;
+                    }
                 }
             }
         }
-
-        // Return winflag
-        if (tie)
-            return new GameStatus(true);
-        else
-            return new GameStatus(false);
     }
 
     /**
@@ -136,20 +143,16 @@ public class GameService {
      * @return player for next turn
      */
     public Player getNextPlayer() {
-        if (p1.isTurn()) {
-            return p1;
-        }
-        else {
-            return p2;
-        }
+        return p1.isTurn() ? p1 : p2;
     }
 
     /**
-     * Gets the board spot object from the spot id
+     * Gets the complete board spot object from the spot id
      * @param id the spot id
+     * @throws Exception board spot not found
      * @return board spot object
      */
-    private BoardSpot getBoardSpot(int id) {
+    private BoardSpot getBoardSpot(int id) throws Exception {
         var bs = board.getBoardSpots();
         for (int i = 0; i < bs.length; i++) {
             for (int j = 0; j < bs[0].length; j++) {
@@ -158,8 +161,8 @@ public class GameService {
             }
         }
 
-        // No board spot found
-        return null;
+        // Not found, throw exception
+        throw new Exception("Board spot not found");
     }
 
     /**
@@ -168,5 +171,26 @@ public class GameService {
      */
     public String getCompleteBoard() {
         return board.toString();
+    }
+
+    /**
+     * Gets the game status
+     * @return status
+     */
+    public Status getStatus() {
+        return status;
+    }
+
+    /**
+     * Gets the winning player
+     * @throws Exception winner not found
+     * @return winner
+     */
+    public Player getWinner() throws Exception {
+        try {
+            return board.getWinningSpots().get(0).getPlayer();
+        } catch (Exception e) {
+            throw new Exception("Winner has not yet been concluded!");
+        }
     }
 }

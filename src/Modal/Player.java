@@ -1,5 +1,8 @@
 package Modal;
 
+/**
+ * Represents a player
+ */
 public class Player {
     private String name;
     private String symbol;
