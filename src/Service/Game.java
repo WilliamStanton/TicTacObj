@@ -44,7 +44,7 @@ public class Game {
     /**
      * Checks if there is a winner
      */
-    public void updateStatus() {
+    private void updateStatus() {
         // Get board spots
         var bs = board.getBoardSpots();
         ArrayList<BoardSpot> winningBoardSpots = new ArrayList<>();
@@ -152,7 +152,7 @@ public class Game {
      * @throws Exception board spot not found
      * @return board spot object
      */
-    private BoardSpot getBoardSpot(int id) throws Exception {
+    public BoardSpot getBoardSpot(int id) throws Exception {
         var bs = board.getBoardSpots();
         for (int i = 0; i < bs.length; i++) {
             for (int j = 0; j < bs[0].length; j++) {
