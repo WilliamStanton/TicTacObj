@@ -1,4 +1,4 @@
-package Modal;
+package modal;
 
 /**
  * Represents a player

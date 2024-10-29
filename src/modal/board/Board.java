@@ -1,4 +1,4 @@
-package Modal.Board;
+package modal.board;
 
 import java.util.ArrayList;
 
@@ -6,13 +6,14 @@ import java.util.ArrayList;
  * Represents a board
  */
 public class Board {
-    private static int id = 1;
-    private BoardSpot[][] boardSpots;
+    private final BoardSpot[][] boardSpots;
     private ArrayList<BoardSpot> winningSpots;
 
     public Board() {
         // Initialize all board spots
         this.boardSpots = new BoardSpot[3][3];
+        int id = 1; // spot id
+
         for (int i = 0; i < boardSpots.length; i++) {
             for (int j = 0; j < boardSpots[0].length; j++) {
                 boardSpots[i][j] = new BoardSpot(id);

@@ -1,6 +1,6 @@
-package Modal.Board;
+package modal.board;
 
-import Modal.Player;
+import modal.Player;
 
 public class BoardSpot {
     private int id;
