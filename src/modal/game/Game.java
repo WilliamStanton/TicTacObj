@@ -9,7 +9,7 @@ import java.util.ArrayList;
 /**
  * Game API
  */
-public class Game {
+public abstract class Game {
     private final Board board;
     private final Player p1;
     private final Player p2;
@@ -25,28 +25,14 @@ public class Game {
 
     /**
      * Updates the game by setting spot and setting next player
-     * @throws Exception game complete
      * @param id the board spot id
      */
-    public void next(int id) throws GameException {
-        if (gameStatus == GameStatus.INCOMPLETE) {
-            // Update chosen board spot for current player
-            try {
-                getBoardSpot(id).setPlayer(getNextPlayer());
-            } catch(GameException e) {
-                throw new GameException("Board spot does not exist");
-            }
-            setNextPlayer(); // Conclude move and enable next player to move
-            updateStatus();
-        }
-        else
-            throw new GameException("Game is complete, cannot continue.");
-    }
+    public abstract void next(int id) throws GameException;
 
     /**
      * Checks if there is a winner
      */
-    private void updateStatus() {
+    protected void updateStatus() {
         // Get board spots
         var bs = board.getBoardSpots();
         ArrayList<BoardSpot> winningBoardSpots = new ArrayList<>();
@@ -153,7 +139,7 @@ public class Game {
     /**
      * Sets the player for the next turn
      */
-    private void setNextPlayer() {
+    protected void setNextPlayer() {
         // If P1 just went, make P2 next turn
         if (p1.isTurn()) {
             p1.setTurn(false);
@@ -177,7 +163,6 @@ public class Game {
     /**
      * Gets the complete board spot object from the spot id
      * @param id the spot id
-     * @throws Exception board spot not found
      * @return board spot object
      */
     public BoardSpot getBoardSpot(int id) throws GameException {
@@ -188,7 +173,6 @@ public class Game {
                     return bs[i][j];
             }
         }
-
         // Not found, throw exception
         throw new GameException("Board spot not found");
     }
@@ -210,8 +194,23 @@ public class Game {
     }
 
     /**
+     * Gets Player 1
+     * @return p1
+     */
+    protected Player getP1() {
+        return p1;
+    }
+
+    /**
+     * Gets Player 2, can be AI
+     * @return p2 (can also be AI player obj)
+     */
+    protected Player getP2() {
+        return p2;
+    }
+
+    /**
      * Gets the winning player
-     * @throws Exception winner not found
      * @return winner
      */
     public Player getWinner() throws GameException {
