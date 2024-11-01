@@ -25,6 +25,7 @@ public class ComputerGame extends Game {
             }
             setNextPlayer(); // Conclude move and enable next player (AI) to move
             updateStatus(); // Checks if there is a game winner
+            next(); // AI Move
         }
         else if (status == GameStatus.WON || status == GameStatus.TIED)
             throw new GameException("Game is complete, cannot continue."); // Game has already been completed
@@ -35,7 +36,7 @@ public class ComputerGame extends Game {
     /**
      * AI Move
      */
-    public void next() throws GameException {
+    private void next() throws GameException {
         boolean found = false; // init flag
         Random rand = new Random(); // init rand
 
@@ -55,7 +56,7 @@ public class ComputerGame extends Game {
      * Returns true if current turn is computer turn
      * @return true/false if computer turn or not
      */
-    public boolean computerTurn() {
+    private boolean computerTurn() {
         return getNextPlayer().equals(getP2());
     }
 }

@@ -29,16 +29,7 @@ public class Main {
                     System.out.print(game instanceof ComputerGame ? "Your turn: " : game.getNextPlayer() + " turn: ");
                     while (true) {
                         try {
-                            // Computer Game
-                            if (game instanceof ComputerGame compGame) {
-                                if (compGame.computerTurn())
-                                    compGame.next(); // Computer turn
-                                else
-                                    compGame.next(kb.nextInt()); // Player turn
-                            }
-                            // Player Game
-                            else
-                                game.next(kb.nextInt()); // Next Player turn
+                            game.next(kb.nextInt()); // Next Player turn
                             break;
                         } catch (GameException e) {
                             System.out.println(e.getMessage());
