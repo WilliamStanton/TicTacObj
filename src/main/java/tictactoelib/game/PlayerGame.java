@@ -1,4 +1,4 @@
-package modal.game;
+package tictactoelib.game;
 
 /**
  * Player Game implementation, Player vs Player
@@ -19,8 +19,10 @@ public class PlayerGame extends Game {
             } catch(GameException e) {
                 throw new GameException(e.getMessage());
             }
-            setNextPlayer(); // Conclude move and enable next player to move (player)
+
             updateStatus(); // Checks if there is a game winner
+            if (getStatus() == GameStatus.INCOMPLETE)
+                setNextPlayer(); // Conclude move and enable next player to move (player)
         }
         else
             throw new GameException("Game is complete, cannot continue."); // Game has already been completed

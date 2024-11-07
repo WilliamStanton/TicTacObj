@@ -1,4 +1,8 @@
-package modal.game;
+package tictactoelib.game;
+
+import tictactoelib.Player;
+import tictactoelib.board.Board;
+import tictactoelib.board.BoardSpot;
 
 import java.util.Random;
 
@@ -6,6 +10,11 @@ import java.util.Random;
  * Computer Game implementation, Player vs AI
  */
 public class ComputerGame extends Game {
+
+    public ComputerGame() {
+        getP2().setName("Computer");
+    }
+
     /**
      * Player Move
      * @param id the board spot id
@@ -23,9 +32,14 @@ public class ComputerGame extends Game {
             } catch(GameException e) {
                 throw new GameException(e.getMessage());
             }
-            setNextPlayer(); // Conclude move and enable next player (AI) to move
+
             updateStatus(); // Checks if there is a game winner
-            next(); // AI Move
+
+            // AI Move only if game incomplete
+            if (getStatus() == GameStatus.INCOMPLETE) {
+                setNextPlayer(); // Conclude move and enable next player to move (player)
+                next();
+            }
         }
         else if (status == GameStatus.WON || status == GameStatus.TIED)
             throw new GameException("Game is complete, cannot continue."); // Game has already been completed
@@ -50,13 +64,5 @@ public class ComputerGame extends Game {
                 updateStatus(); // Checks if there is a game winner
             }
         }
-    }
-
-    /**
-     * Returns true if current turn is computer turn
-     * @return true/false if computer turn or not
-     */
-    private boolean computerTurn() {
-        return getNextPlayer().equals(getP2());
     }
 }

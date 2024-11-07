@@ -1,4 +1,4 @@
-package modal.game;
+package tictactoelib.game;
 
 /**
  * Game Status Enum

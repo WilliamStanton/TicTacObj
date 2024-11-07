@@ -1,8 +1,8 @@
-package modal.game;
+package tictactoelib.game;
 
-import modal.board.Board;
-import modal.board.BoardSpot;
-import modal.Player;
+import tictactoelib.board.Board;
+import tictactoelib.board.BoardSpot;
+import tictactoelib.Player;
 
 import java.util.ArrayList;
 
@@ -20,6 +20,14 @@ public abstract class Game {
         this.board = new Board();
         this.p1 = new Player("Player 1", "O", true);
         this.p2 = new Player("Player 2", "X", false);
+        gameStatus = GameStatus.INCOMPLETE;
+    }
+
+    // Initialize board
+    public Game(String player1Name, String player2Name) {
+        this.board = new Board();
+        this.p1 = new Player(player1Name, "O", true);
+        this.p2 = new Player(player2Name, "X", false);
         gameStatus = GameStatus.INCOMPLETE;
     }
 
@@ -139,16 +147,20 @@ public abstract class Game {
     /**
      * Sets the player for the next turn
      */
-    protected void setNextPlayer() {
+    protected void setNextPlayer() throws GameException {
         // If P1 just went, make P2 next turn
-        if (p1.isTurn()) {
+        if (p1.isTurn() && gameStatus == GameStatus.INCOMPLETE) {
             p1.setTurn(false);
             p2.setTurn(true);
         }
         // If P2 just went, make P1 next turn
-        else {
+        else if (p2.isTurn() && gameStatus == GameStatus.INCOMPLETE){
             p1.setTurn(true);
             p2.setTurn(false);
+        }
+        // Else game over
+        else {
+            throw new GameException("Game has already been concluded");
         }
     }
 
@@ -156,8 +168,11 @@ public abstract class Game {
      * Gets the player for the next turn
      * @return player for next turn
      */
-    public Player getNextPlayer() {
-        return p1.isTurn() ? p1 : p2;
+    public Player getNextPlayer() throws GameException {
+        if (gameStatus == GameStatus.INCOMPLETE)
+            return p1.isTurn() ? p1 : p2;
+        else
+            throw new GameException("Game has already been concluded");
     }
 
     /**
@@ -207,6 +222,10 @@ public abstract class Game {
      */
     protected Player getP2() {
         return p2;
+    }
+
+    public Board getBoard() {
+        return board;
     }
 
     /**

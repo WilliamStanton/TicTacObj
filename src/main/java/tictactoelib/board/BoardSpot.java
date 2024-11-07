@@ -1,7 +1,7 @@
-package modal.board;
+package tictactoelib.board;
 
-import modal.Player;
-import modal.game.GameException;
+import tictactoelib.Player;
+import tictactoelib.game.GameException;
 
 public class BoardSpot {
     private final int id;
